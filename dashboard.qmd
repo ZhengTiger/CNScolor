@@ -1,0 +1,324 @@
+---
+title: "CNScolor"
+author: "TigerZ生信宝库"
+server: shiny
+format: 
+  dashboard:
+    nav-buttons:
+      - icon: github
+        href: https://github.com/ZhengTiger/CNScolor
+---
+
+```{r}
+#| context: setup
+
+library(ggplot2)
+library(reactable)
+library(rclipboard)
+library(htmltools)
+
+source("config.R")
+```
+
+# 首页
+
+## {.sidebar}
+
+```{r}
+choices <- c(1:length(Image_url))
+names(choices) <- paste("第",choices,"期")
+selectInput('number', 'Color Palette', choices)
+```
+
+```{r}
+numericInput('colornum', 'Color Number', value = 4, min = 1, max = 256)
+```
+
+Color Code
+
+```{r}
+reactableOutput("table")
+```
+
+```{r}
+div(
+  style='display:flex; justify-content:space-between; margin-top:15px',
+  uiOutput("clip_HEX"),
+  uiOutput("clip_RGB")
+)
+```
+
+
+```{r}
+#| context: server
+
+HEX_select <- reactive(HEX_color[[as.numeric(input$number)]])
+RGB_select <- reactive(RGB_color[[as.numeric(input$number)]])
+color_df <- reactive(data.frame(
+  "HEX" = HEX_select()[1:input$colornum],
+  "RGB" = RGB_select()[1:input$colornum]
+))
+
+observeEvent(input$number, {
+  if (length(HEX_select())>4) {
+    freezeReactiveValue(input, "colornum")
+    updateNumericInput(inputId = "colornum", max = length(HEX_select()), value=4)
+  }else{
+    freezeReactiveValue(input, "colornum")
+    updateNumericInput(inputId = "colornum", max = length(HEX_select()),
+                       value=length(HEX_select()))
+  }
+})
+
+observeEvent(input$colornum, {
+  if (input$colornum > length(HEX_select())) {
+    freezeReactiveValue(input, "colornum")
+    updateNumericInput(inputId = "colornum", max = length(HEX_select()),
+                       value=length(HEX_select()))
+  }
+})
+
+output$table <- renderReactable(
+  reactable(
+    color_df(),
+    columns = list(
+      HEX = colDef(
+        style = JS("function(rowInfo, column, state) {
+          const { showColors, mpgColors } = state.meta
+          if (showColors) {
+            return { backgroundColor: mpgColors[rowInfo.index] }
+          }
+        }")
+      ),
+      RGB = colDef(
+        style = JS("function(rowInfo, column, state) {
+          const { showColors, mpgColors } = state.meta
+          if (showColors) {
+            return { backgroundColor: mpgColors[rowInfo.index] }
+          }
+        }")
+      )      
+    ),
+    meta = list(
+      mpgColors = HEX_select(),
+      showColors = TRUE
+    ),
+    sortable = FALSE, 
+    defaultPageSize = 20)
+  )
+
+output$clip_HEX <- renderUI({
+  rclipButton(
+    inputId = "clipbtn_HEX",
+    label = "HEX Copy",
+    clipText = HEX_select()[1:input$colornum], 
+    icon = icon("clipboard"),
+    tooltip = "Successfully Copied!",
+    placement = "auto",
+    options = list(delay = list(show = 100, hide = 100), trigger = "click"),
+    class = "btn-default", style='padding:4px; font-size:80%; margin-left:15px'
+  )
+})
+
+output$clip_RGB <- renderUI({
+  rclipButton(
+    inputId = "clipbtn_RGB",
+    label = "RGB Copy",
+    clipText = RGB_select()[1:input$colornum], 
+    icon = icon("clipboard"),
+    tooltip = "Successfully Copied!",
+    placement = "auto",
+    options = list(delay = list(show = 100, hide = 100), trigger = "click"),
+    class = "btn-default", style='padding:4px; font-size:80%; margin-right:15px'
+  )
+})
+```
+
+
+
+## Column {width=40%}
+
+```{r}
+htmlOutput("picture")
+```
+
+```{r}
+#| context: server
+
+output$picture <- renderUI({
+  tags$img(src = Image_url[as.numeric(input$number)])
+  })
+```
+
+
+
+## Column {width=60%}
+
+### Row
+
+#### Column
+
+```{r}
+plotOutput('line_plot')
+```
+
+```{r}
+#| context: server
+
+output$line_plot <- renderPlot({
+  if (input$colornum>=1 | input$colornum<=length(HEX_select())){
+    Value <- c()
+    for (i in 1:input$colornum){
+      Value <- c(Value, runif(7, min=i-0.5, max=i+0.5))
+    }
+    data <- data.frame(
+      'Date' = rep(c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'), input$colornum),
+      'Value' = Value,
+      'Type' = rep(paste("color",1:input$colornum), each=7)
+    )
+      data$Date <- factor(data$Date, levels = c('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'))
+      data$Type <- factor(data$Type, levels = paste("color",1:input$colornum))
+      
+      ggplot(data, aes(x=Date, y=Value, color=Type, fill=Type, group=Type)) +
+        geom_line(linewidth=1) +
+        geom_point(shape=21, color="black", size=3) +
+        labs(x="Date", y="Value") +
+        scale_y_continuous(breaks=seq(0,max(Value),1), limits = c(0,max(Value)),
+                           expand = expansion(mult = c(0, 0.05))) +
+        theme_classic(base_size = 13) +
+        theme(panel.grid.major.y = element_line(),
+              legend.position = "top", legend.title = element_blank(), 
+              legend.margin = margin(0,35,0,0)) +
+        scale_fill_manual(values=HEX_select()) +
+        scale_color_manual(values=HEX_select()) +
+        guides(fill=guide_legend(ncol = 4, byrow = TRUE))
+    }
+  })
+```
+
+#### Column
+
+```{r}
+plotOutput('scatter_plot')
+```
+
+```{r}
+#| context: server
+
+output$scatter_plot <- renderPlot({
+  X <- c()
+  Y <- c()
+  for (i in 1:input$colornum){
+    X <- c(X, runif(10, min=i-0.5, max=i+0.5))
+    Y <- c(Y, runif(10, min=i-1, max=i+2))
+  }
+  data <- data.frame(
+    'X' = X,
+    'Y' = Y,
+    'Type' = rep(paste("color",1:input$colornum), each=10)
+  )
+  data$Type <- factor(data$Type, levels = paste("color",1:input$colornum))
+  
+  ggplot(data, aes(x=X, y=Y, fill = Type)) +
+    geom_point(shape=21, color="black", size=3) +
+    scale_y_continuous(breaks=seq(0,max(Y),2), limits = c(0,max(Y)),
+                       expand = expansion(mult = c(0, 0.05))) +
+    scale_x_continuous(breaks=seq(0,max(X),2), limits = c(0,max(X)),
+                       expand = expansion(mult = c(0, 0.05))) +
+    theme_classic(base_size = 13) +
+    theme(panel.grid.major.y = element_line(),
+          legend.position = "top", legend.title = element_blank(),
+          legend.margin = margin(0,35,0,0)) +
+    scale_fill_manual(values=HEX_select()) +
+    guides(fill=guide_legend(ncol = 4, byrow = TRUE))
+})
+```
+
+
+
+### Row
+
+#### Column
+
+```{r}
+plotOutput('bar_plot')
+```
+
+```{r}
+#| context: server
+
+output$bar_plot <- renderPlot({
+  X <- as.character(1:input$colornum)
+  Y <- sample(1:input$colornum, input$colornum)
+  data <- data.frame(
+    'X' = X,
+    'Y' = Y,
+    'Type' = paste('color', 1:input$colornum)
+  )
+  data$X <- factor(data$X, levels = data$X)
+  data$Type <- factor(data$Type, levels = paste('color', 1:input$colornum))
+  
+  ggplot(data=data, aes(x=X, y=Y, fill=Type)) +
+    geom_bar(stat="identity") +
+    labs(x="Date", y="Value") +
+    scale_y_continuous(breaks=seq(0,max(Y),2), limits = c(0,max(Y)),
+                       expand = expansion(mult = c(0, 0.05))) +
+    theme_classic(base_size = 13) +
+    theme(panel.grid.major.y = element_line(),
+          legend.position = "top", legend.title = element_blank(),
+          legend.margin = margin(0,35,0,0)) +
+    scale_fill_manual(values=HEX_select()) +
+    guides(fill=guide_legend(ncol = 4, byrow = TRUE))
+})
+```
+
+
+#### Column
+
+```{r}
+plotOutput('pie_plot')
+```
+
+```{r}
+#| context: server
+
+output$pie_plot <- renderPlot({
+  X <- as.character(1:input$colornum)
+  Y <- sample(1:input$colornum, input$colornum)
+  data <- data.frame(
+    'X' = X,
+    'Y' = Y,
+    'Type' = paste('color', 1:input$colornum)
+  )
+  data$X <- factor(data$X, levels = data$X)
+  data$Type <- factor(data$Type, levels = paste('color', 1:input$colornum))
+  
+  ggplot(data, aes(x="", y=Y, fill=Type)) +
+    geom_bar(stat="identity", width=1,  color="white", position = position_stack(reverse =T)) +
+    coord_polar("y", start=0) +
+    theme_void(base_size = 13) +
+    theme(legend.position = "top", legend.title = element_blank(),
+          legend.margin = margin(0,35,0,0)) +
+    scale_fill_manual(values=HEX_select()) +
+    guides(fill=guide_legend(ncol = 4, byrow = TRUE))
+})
+```
+
+
+
+
+
+# 更多
+
+<p style="font-size: 20px; text-align: center;">更多内容请扫描下方二维码</p>
+<p style="font-size: 20px; text-align: center;">或者微信搜索公众号 <strong>TigerZ 生信宝库</strong></p>
+<p style="font-size: 20px; text-align: center;">每天分享数据可视化、生信分析相关知识哦！</p>
+
+<br>
+
+<center>
+![](https://ZhengTiger.github.io/picx-images-hosting/公众号/Type2.4qrkq2vc5w.webp){width=50%}
+</center>
+
+
+
