@@ -12,7 +12,7 @@
 
 CNScolor 的所有内容都整合进了一个在线网站中：
 
-<img src="https://ZhengTiger.github.io/picx-images-hosting/公众号/video_speed.3gonkub1eg.gif" width="100%" />
+<img src="https://github.com/ZhengTiger/CNScolor/blob/main/video.gif" width="100%" />
 
 网站左侧的选项栏用于选择要展示的内容：
 
