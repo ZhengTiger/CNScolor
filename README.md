@@ -44,7 +44,7 @@ RGB = c("29,82,161", "113,109,178", "101,200,204", "114,193,90")
 更多内容请关注公众号 **TigerZ 生信宝库**：
 
 <center>
-![](https://ZhengTiger.github.io/picx-images-hosting/公众号/Type2.4qrkq2vc5w.webp){width=50%}
+<img src="https://ZhengTiger.github.io/picx-images-hosting/公众号/Type2.4qrkq2vc5w.webp" width="50%" />
 </center>
 
 
