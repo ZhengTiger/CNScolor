@@ -35,7 +35,7 @@ RGB = c("29,82,161", "113,109,178", "101,200,204", "114,193,90")
 
 感兴趣的小伙伴可以查看 Github 网址对项目进行贡献，为了便于整和到网站中，请大家在贡献时参考格式模板：
 
-<https://github.com/ZhengTiger/CNScolor/issues/1>
+[https://github.com/ZhengTiger/CNScolor/issues/1](https://github.com/ZhengTiger/CNScolor/issues/1)
 
 ![素材提供-格式模板](https://mmbiz.qpic.cn/sz_mmbiz_png/sIZTN4BrHpTOFbdmo5d0AV5hLAkvNawBRkeOrJ4OZ0ZreV9V68vzwBwqmscym52yfyFZOOzkPkwXUPJxOUw9Hw/640?wx_fmt=png&from=appmsg&tp=webp&wxfrom=5&wx_lazy=1)
 
