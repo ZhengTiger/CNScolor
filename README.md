@@ -41,6 +41,11 @@ RGB = c("29,82,161", "113,109,178", "101,200,204", "114,193,90")
 
 我会在大家贡献的素材中进行挑选，对于成功参与的小伙伴，会在后续的推文和网站中对贡献者的名字进行标注哦！
 
+更多内容请关注公众号 **TigerZ 生信宝库**：
+
+<center>
+![](https://ZhengTiger.github.io/picx-images-hosting/公众号/Type2.4qrkq2vc5w.webp){width=50%}
+</center>
 
 
 
