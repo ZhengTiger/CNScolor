@@ -60,14 +60,14 @@ color_df <- reactive(data.frame(
 ))
 
 observeEvent(input$number, {
-  if (length(HEX_select())>4) {
-    freezeReactiveValue(input, "colornum")
-    updateNumericInput(inputId = "colornum", max = length(HEX_select()), value=4)
-  }else{
+#  if (length(HEX_select())>4) {
+#    freezeReactiveValue(input, "colornum")
+#    updateNumericInput(inputId = "colornum", max = length(HEX_select()), value=4)
+#  }else{
     freezeReactiveValue(input, "colornum")
     updateNumericInput(inputId = "colornum", max = length(HEX_select()),
                        value=length(HEX_select()))
-  }
+#  }
 })
 
 observeEvent(input$colornum, {
