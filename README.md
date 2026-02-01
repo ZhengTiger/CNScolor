@@ -7,6 +7,7 @@
 - **Github 地址：**<https://github.com/ZhengTiger/CNScolor>
 - **网站地址：**<https://tigerz.shinyapps.io/CNScolor/>
 
+[CNScolor](CNScolor_cover.png){:width="100%"}
 
 ## 1. CNScolor 内容预览
 
@@ -40,6 +41,12 @@ RGB = c("29,82,161", "113,109,178", "101,200,204", "114,193,90")
 ![素材提供-格式模板](https://mmbiz.qpic.cn/sz_mmbiz_png/sIZTN4BrHpTOFbdmo5d0AV5hLAkvNawBRkeOrJ4OZ0ZreV9V68vzwBwqmscym52yfyFZOOzkPkwXUPJxOUw9Hw/640?wx_fmt=png&from=appmsg&tp=webp&wxfrom=5&wx_lazy=1)
 
 我会在大家贡献的素材中进行挑选，对于成功参与的小伙伴，会在后续的推文和网站中对贡献者的名字进行标注哦！
+
+## 3. sciRcolor
+
+sciRcolor 项目用于解决 R 语言科研绘图中颜色选择的问题，包含了 **100** 种常用配色（**60** 种离散色 + **40** 种连续色），现已合并到 CNScolor 网页中。
+
+[sciRcolor](sciRcolor_gallery.png){:width="100%"}
 
 更多内容请关注公众号 **TigerZ 生信宝库**：
 
